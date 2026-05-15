@@ -1,8 +1,8 @@
-name: Build SystemMonitor EXE
+name: Build SystemMonitor
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -15,24 +15,22 @@ jobs:
     
     - name: Compile Server
       shell: cmd
-      run: |
-        cl /EHsc /Fe:server.exe server.cpp ws2_32.lib
+      run: cl /EHsc /Fe:server.exe server.cpp ws2_32.lib
       working-directory: src
     
     - name: Compile Client
       shell: cmd
-      run: |
-        cl /EHsc /Fe:client.exe client.cpp ws2_32.lib
+      run: cl /EHsc /Fe:client.exe client.cpp ws2_32.lib
       working-directory: src
     
-    - name: Create release folder
+    - name: Copy to release
       shell: cmd
       run: |
         mkdir release
         copy src\server.exe release\
         copy src\client.exe release\
     
-    - name: Upload EXE files
+    - name: Upload EXE
       uses: actions/upload-artifact@v4
       with:
         name: SystemMonitor-EXE
