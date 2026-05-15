@@ -2,7 +2,7 @@ name: Build SystemMonitor
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -13,24 +13,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
+    - name: Setup MSVC compiler
+      uses: ilammy/msvc-dev-cmd@v1
+    
     - name: Compile Server
       shell: cmd
-      run: cl /EHsc /Fe:server.exe server.cpp ws2_32.lib
+      run: |
+        cl /EHsc /Fe:server.exe server.cpp ws2_32.lib
       working-directory: src
     
     - name: Compile Client
       shell: cmd
-      run: cl /EHsc /Fe:client.exe client.cpp ws2_32.lib
+      run: |
+        cl /EHsc /Fe:client.exe client.cpp ws2_32.lib
       working-directory: src
     
-    - name: Copy to release
+    - name: Create release folder
       shell: cmd
       run: |
         mkdir release
-        copy src\server.exe release\
-        copy src\client.exe release\
+        if exist src\server.exe copy src\server.exe release\
+        if exist src\client.exe copy src\client.exe release\
     
-    - name: Upload EXE
+    - name: Upload EXE files
       uses: actions/upload-artifact@v4
       with:
         name: SystemMonitor-EXE
