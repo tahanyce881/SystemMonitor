@@ -82,8 +82,7 @@ string getRAMusage() {
 }
 
 int main() {
-    cout << "=== CLIENT ISHLEYAR ===\n";
-    cout << "Servere maglumat iberilyar...\n\n";
+    cout << "=== CLIENT ISHLEYAR ===\nServere maglumat iberilyar...\n";
     
     while (true) {
         WSADATA wsa;
@@ -108,7 +107,7 @@ int main() {
             recv(sock, response, 256, 0);
             cout << "[" << name << "] CPU:" << cpu << "% RAM:" << ram << "% => " << response << endl;
         } else {
-            cout << "❌ Serwere birikip bolmady!\n";
+            cout << "❌ Serwere birikip bolmady! (Server isleya?" << endl;
         }
         
         closesocket(sock);
