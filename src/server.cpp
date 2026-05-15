@@ -12,31 +12,24 @@
 using namespace std;
 
 struct Computer {
-    string name;
-    string ip;
-    string cpu_usage;
-    string ram_usage;
-    string status;
-    string last_time;
+    string name, ip, cpu_usage, ram_usage, status, last_time;
     int is_critical;
 };
 
 void saveToCSV(vector<Computer>& comps) {
     ofstream file("computers.csv");
     file << "Name,IP,CPU%,RAM%,Status,LastUpdate,Priority\n";
-    for (auto& c : comps) {
+    for (auto& c : comps)
         file << c.name << "," << c.ip << "," << c.cpu_usage << "," << c.ram_usage << ","
              << c.status << "," << c.last_time << "," << (c.is_critical ? "CRITICAL" : "NORMAL") << "\n";
-    }
     file.close();
 }
 
 string checkStatus(string cpu, string ram) {
-    float cpu_val = stof(cpu);
-    float ram_val = stof(ram);
+    float cpu_val = stof(cpu), ram_val = stof(ram);
     if (cpu_val > 80 || ram_val > 85) return "CRITICAL";
-    else if (cpu_val > 60 || ram_val > 70) return "WARNING";
-    else return "NORMAL";
+    if (cpu_val > 60 || ram_val > 70) return "WARNING";
+    return "NORMAL";
 }
 
 int main() {
@@ -52,11 +45,7 @@ int main() {
     bind(srv, (sockaddr*)&addr, sizeof(addr));
     listen(srv, 5);
     
-    cout << "================================\n";
-    cout << "  SYSTEM MONITOR SERVER\n";
-    cout << "  Port: 8888\n";
-    cout << "================================\n";
-    cout << "Server is working...\n\n";
+    cout << "=== SYSTEM MONITOR SERVER (Port:8888) ===\nServer is working...\n";
     
     vector<Computer> computers;
     
@@ -72,7 +61,6 @@ int main() {
         string name, cpu, ram, ip;
         vector<string> parts;
         size_t pos = 0, prev = 0;
-        
         while ((pos = data.find('|', prev)) != string::npos) {
             parts.push_back(data.substr(prev, pos - prev));
             prev = pos + 1;
@@ -107,14 +95,7 @@ int main() {
         }
         
         if (!found) {
-            Computer comp;
-            comp.name = name;
-            comp.ip = ip;
-            comp.cpu_usage = cpu;
-            comp.ram_usage = ram;
-            comp.status = status;
-            comp.last_time = time_str;
-            comp.is_critical = critical;
+            Computer comp = {name, ip, cpu, ram, status, time_str, critical};
             computers.push_back(comp);
         }
         
@@ -125,15 +106,11 @@ int main() {
         saveToCSV(computers);
         
         system("cls");
-        cout << "=== SYSTEM MONITOR SERVER ===\n";
-        cout << "Aktiw kompýuterler: " << computers.size() << "\n";
-        cout << "=============================\n\n";
-        
+        cout << "=== SYSTEM MONITOR SERVER ===\nAktiw kompýuterler: " << computers.size() << "\n\n";
         for (auto& comp : computers) {
             cout << "[" << (comp.is_critical ? "⚠️ KRITIK" : "✅ NORMAL") << "] ";
             cout << comp.name << " (" << comp.ip << ")\n";
-            cout << "   CPU: " << comp.cpu_usage << "%  RAM: " << comp.ram_usage << "%\n";
-            cout << "   Status: " << comp.status << "\n\n";
+            cout << "   CPU: " << comp.cpu_usage << "%  RAM: " << comp.ram_usage << "%\n\n";
         }
         
         string response = "RECEIVED:" + status;
